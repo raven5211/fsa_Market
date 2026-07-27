@@ -4,20 +4,24 @@ export default router;
 
 import requireBody from "#middleware/requireBody";
 
+import { authenticate, createUser } from "#db/queries/users";
+
 router.post(
   "/register",
   requireBody(["username", "password"]),
-  async (req, next) => {
+  async (req, res) => {
     const newUser = req.body;
-    res.send("post /users/register test");
+    const token = await createUser(newUser);
+    res.status(201).send(token);
   },
 );
 
 router.post(
   "/login",
   requireBody(["username", "password"]),
-  async (req, next) => {
+  async (req, res) => {
     const userCredentials = req.body;
-    res.send("post /users/login test");
+    const token = await authenticate(userCredentials);
+    res.send(token);
   },
 );

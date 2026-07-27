@@ -13,3 +13,38 @@ export async function createProduct({ title, description, price }) {
   } = await db.query(sql, [title, description, price]);
   return product;
 }
+
+export async function getProducts() {
+  const sql = `
+    SELECT *
+    FROM products
+  `;
+  const { rows: products } = await db.query(sql);
+  return products;
+}
+
+export async function getProductById(id) {
+  const sql = `
+    SELECT *
+    FROM products
+    WHERE id = $1
+  `;
+  const {
+    rows: [product],
+  } = await db.query(sql, [id]);
+  return product;
+}
+
+export async function getProductsByOrderId(order_id) {
+  const sql = `
+    SELECT products.*
+    FROM
+      orders_products
+      JOIN orders ON orders_products.order_id = orders.id
+      JOIN products ON orders_products.product_id = products.id
+    WHERE
+      orders.id = $1
+  `;
+  const { rows: products } = await db.query(sql, [order_id]);
+  return products;
+}
